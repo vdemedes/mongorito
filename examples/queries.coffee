@@ -3,8 +3,7 @@ Mongorito = require '../lib/mongorito'
 Mongorito.connect ['mongo://127.0.0.1:27017/databaseName']
 
 class Post
-	constructor: ->
-		super 'posts'
+	keys: ['title', 'author', 'content']
 		
 Post = Mongorito.bake Post
 

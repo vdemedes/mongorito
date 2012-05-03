@@ -3,8 +3,7 @@ Mongorito = require '../lib/mongorito'
 Mongorito.connect ['mongo://127.0.0.1:27017/databaseName']
 
 class Tweet
-	constructor: ->
-		super 'tweets'
+	keys: ['body']
 	
 	validateBody: (callback) -> # you should pass false, if invalid and true, if valid
 		if @body.length >= 140

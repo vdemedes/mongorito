@@ -1,14 +1,15 @@
 Mongorito = require '../lib/mongorito'
 
 Mongorito.connect ['mongo://127.0.0.1:27017/mongorito']
-Mongorito.cache ['127.0.0.1:11211']
 
 require 'should'
 async = require 'async'
 
 class Post
-	constructor: ->
-		super 'posts'
+	keys: ['author', 'title']
+	scopes:
+		one: limit: 1
+		latest: title: 'Just created'
 
 Post = Mongorito.bake Post
 
@@ -22,6 +23,12 @@ describe 'Mongorito', ->
 				Post.find (err, posts) ->
 					posts.length.should.equal 1
 					do done
+		
+		it 'should mass-asign post info', (done) ->
+			post = new Post
+			post.fill title: 'Very nice post!', author: 'Vadim', admin: yes
+			post.title.should.equal('Very nice post!') and post.author.should.equal('Vadim') and not post.admin
+			do done
 	
 	describe 'editing record', ->
 		it 'should save edited version of the post', (done) ->
@@ -30,14 +37,25 @@ describe 'Mongorito', ->
 				post.title = 'Edited title!'
 				post.save ->
 					do done
+		
+		it 'should have 2 versions of the document', (done) ->
+			Post.find (err, posts) ->
+				post = posts[0]
+				post.title = 'Totally different title!'
+				post.old.title.should.equal('Edited title!') and post.title.should.equal 'Totally different title!'
+				do done
 	
-	describe 'getting record', ->
+	describe 'getting records', ->
 		it 'should fetch just edited post', (done) ->
 			Post.find (err, posts) ->
 				posts[0].title.should.equal 'Edited title!'
 				do done
-	
-	describe 'fetching records', ->
+		
+		it 'should fetch post with regex', (done) ->
+			Post.find title: /^Edit/i, (err, posts) ->
+				posts.length.should.equal 1
+				do done
+		
 		it 'should fetch only one post', (done) ->
 			Post.find limit: 1, (err, posts) ->
 				posts.length.should.equal 1
@@ -61,7 +79,17 @@ describe 'Mongorito', ->
 			Post.find sort: { _id: -1 }, (err, posts) ->
 				posts[0].title is 'Just created' and posts.length.should.equal 2
 				do done
+	
+	describe 'testing scopes', ->
+		it 'should fetch only 1 post', (done) ->
+			Post.one (err, posts) ->
+				posts.length.should.equal 1
+				do done
 		
+		it 'should fetch only latest posts', (done) ->
+			Post.latest (err, posts) ->
+				posts.length.should.equal 1
+				do done
 	
 	describe 'deleting records', ->
 		it 'should remove all posts', (done) ->

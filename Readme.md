@@ -5,7 +5,6 @@
 # Features
 
 - Define models, and operate with them just like usual objects, forget about documentation
-- Built-in caching, using [Memcacher](https://github.com/vdemedes/memcacher)
 - Based on Mongolian
 - Super-fast, lightweight, all codebase is in one file
 - Covered by tests
@@ -23,11 +22,12 @@ npm install mongorito
 Mongorito = require 'mongorito'
 
 Mongorito.connect ['mongo://user:password@127.0.0.1:27017/databaseName']
-Mongorito.cache ['127.0.0.1:11211'] # optional, allows automatic caching. It is just one line to enable it!
 
 class Post
-	constructor: ->
-		super 'posts' # telling our collection name
+	keys: ['author', 'title']
+	scopes:
+		one: limit: 1
+		latest: title: 'Just created'
 
 Post = Mongorito.bake Post # Now, we are ready to go!
 
@@ -44,7 +44,7 @@ post.save (err) ->
 		post.remove ->
 			# removed!
 
-Post.find title : 'Some title!', (err, posts) ->
+Post.find title: 'Some title!', (err, posts) ->
 	for post in posts
 		# post is an instance of Post model, so you can perform usual methods on it
 		post.remove ->
@@ -54,46 +54,6 @@ Post.find title : 'Some title!', (err, posts) ->
 
 Check out **examples** folder, it has a lot of code, which describes all parts of Mongorito.
 
-# For pure JS folks
-
-Honestly, Mongorito was not developed with "JS" in mind. Mongorito is for CoffeeScript developers. But, in case you have no other choice:
-
-```javascript
-var Mongorito = require('mongorito');
-
-Mongorito.connect(['mongo://user:password@127.0.0.1:27017/databaseName']);
-Mongorito.cache(['127.0.0.1:11211']);
-
-var Post = (function(){
-	
-	function Post(){ // constructor
-		Post.__super__.constructor.call(this, 'posts');
-	}
-	
-	Post.prototype.validateTitle = function(callback){ // declare methods, like this
-		if(! this.title) {
-			callback(false);
-		} else {
-			callback(true);
-		}
-	}
-	
-	return Post;
-	
-})();
-
-Post = Mongorito.bake(Post); // Now, we are ready to go!
-
-Post.find(function(err, posts){
-	var length = posts.length;
-	for(var i = 0; i < length; i++) {
-		posts[i].remove(function(){ // posts[i] is an instance of Post class, so you can operate with it as a model
-			// removed
-		});
-	}
-});
-```
-
 # Tests
 
 Tests made using Mocha. Run using:
@@ -102,6 +62,10 @@ Tests made using Mocha. Run using:
 mocha
 ```
 
+# Todo
+
+- Connecting to Replica Sets
+- Built-in caching
 
 # License 
 

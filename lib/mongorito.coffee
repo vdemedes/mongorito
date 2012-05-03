@@ -1,23 +1,28 @@
 mongolian = require 'mongolian'
 async = require 'async'
-memcacher = require 'memcacher'
 inflect = require 'i'
 Client = undefined
-Cache = undefined
 
-`
-var hasProp = Object.prototype.hasOwnProperty,
-  	extendsClass = function(child, parent) {
-		for (var key in parent) {
-			if (hasProp.call(parent, key)) child[key] = parent[key]; 
-		}
-		function ctor(proto) { this.constructor = child; for(var method in proto) { this[method] = proto[method]; } }
-		ctor.prototype = parent.prototype;
-		child.prototype = new ctor(child.prototype);
-		child.__super__ = parent.prototype;
-		return child; 
+String::replaceAt = (index, char) ->
+  @substr(0, index) + char + @substr(index + char.length)
+
+`var __hasProp = {}.hasOwnProperty,
+  extendsClass = function(child, parent) {
+	for (var key in parent) {
+		if (__hasProp.call(parent, key)) child[key] = parent[key]; 
 	}
-`
+	function ctor() {
+		this.constructor = child;
+		for(var key in child.prototype) {
+			var newKey = inflect.camelize(key);
+			this[newKey.replaceAt(0, String.fromCharCode(32 + newKey.charCodeAt(0)))] = child.prototype[key];
+		}
+	}
+	ctor.prototype = parent.prototype;
+	child.prototype = new ctor;
+	child.__super__ = parent.prototype;
+	return child;
+}`
 
 class Mongorito
 	@disconnect: ->
@@ -31,25 +36,33 @@ class Mongorito
 			warn: ->
 			error: ->
 	
-	@cache: (servers = []) ->
-		Cache = new memcacher servers
-	
 	@bake: (model) ->
-		extendsClass(model, MongoritoModel)
-		object = new model
-		model.collectionName = object.collectionName
+		extendsClass model, Model
+		model::collectionName = model.collectionName = model::collectionName or inflect.pluralize model.name.toLowerCase()
+		if model::scopes
+			scopes = []
+			for scope of model::scopes
+				scopes.push scope
+			
+			async.forEach scopes, (scope, nextScope) ->
+				model[scope] = (callback) ->
+					model.find model::scopes[scope], callback
+				do nextScope
+			, ->
 		model.model = model
+		
 		model
 
 
-class MongoritoModel
-	constructor: (@collectionName = '') ->
+class Model
+	constructor: ->
 	
 	fields: ->
-		notFields = ['constructor', 'save', 'collectionName', 'create', 'fields', 'update', 'remove', 'beforeCreate', 'aroundCreate', 'afterCreate', 'beforeUpdate', 'aroundUpdate', 'afterUpdate']
+		notFields = ['constructor', 'save', 'collectionName', 'create', 'fields', 'update', 'remove', 'beforeCreate', 'aroundCreate', 'afterCreate', 'beforeUpdate', 'aroundUpdate', 'afterUpdate', 'old', 'callMethod', 'fill', 'scopes', 'keys', 'model']
 		fields = {}
 		for field of @
 			fields[field] = @[field] if -1 is notFields.indexOf field
+		
 		fields
 	
 	@bakeModelsFromItems: (items, _model) ->
@@ -58,8 +71,10 @@ class MongoritoModel
 			item._id = item._id.toString()
 			model = new _model
 			model.collectionName = _model.collectionName
+			model.old = {}
+			model.model = _model
 			for field of item
-				model[field] = item[field]
+				model.old[field] = model[field] = item[field]
 			models.push model
 		models
 	
@@ -79,44 +94,39 @@ class MongoritoModel
 			notFields = ['limit', 'skip', 'sort']
 			for property of options
 				fields[property] = options[property] if options.hasOwnProperty(property) and notFields.indexOf(property) is -1
+			
 			request = Client.collection(that.collectionName).find(fields)
 			request = request.limit options.limit if options.limit
 			request = request.skip options.skip if options.skip
 			request = request.sort options.sort if options.sort
+			
 			request.toArray (err, items) ->
 				for item in items
 					item._id = item._id.toString()
 				done err, items
 		
-		if not Cache
-			return query (err, items) ->
-				models = that.bakeModelsFromItems items, that.model
-				callback err, models
-		
-		key = "#{ @collectionName }-#{ JSON.stringify(options) }"
-		
-		Cache.get key, (err, result) ->
-			if not result
-				query (err, items) ->
-					Cache.set key, JSON.stringify(items), 86400, [that.collectionName], ->
-						models = that.bakeModelsFromItems items, that.model
-						callback err, models
-			else
-				models = that.bakeModelsFromItems JSON.parse(result), that.model
-				callback err, models
+		query (err, items) ->
+			models = that.bakeModelsFromItems items, that.model
+			callback err, models
+	
+	fill: (fields = {}) ->
+		for key of fields
+			@[key] = fields[key] if -1 < @keys.indexOf key
+	
+	callMethod: (method) ->
+		method = @[method] or @[inflect.underscore(method)]
+		do method if method
 	
 	save: (callback) ->
 		that = @
-		fields = do @fields
-		
-		notFields = ['constructor', 'save', 'collectionName', 'create', 'fields', 'update', 'remove', 'models']
+		@old = fields = @fields()
 		keys = []
-		for field of @
-			keys.push field if -1 is notFields.indexOf field
-		
+		for field of fields
+			keys.push field
 		async.filter keys, (key, nextKey) ->
-			if that["validate#{ inflect.camelize key }"]
-				that["validate#{ inflect.camelize key }"] (valid) ->
+			validationMethod = that["validate#{ inflect.camelize key }"] or that["validate_#{ inflect.underscore key }"]
+			if validationMethod
+				validationMethod (valid) ->
 					nextKey not valid
 			else
 				nextKey false
@@ -129,20 +139,20 @@ class MongoritoModel
 				else
 					that.create callback, yes
 			
-			if Cache then Cache.delByTag that.collectionName, performOperation else do performOperation
+			do performOperation
 		
 	create: (callback, fromSave = no) ->
 		object = @fields()
 		
-		do @beforeCreate if @['beforeCreate']
-		do @aroundCreate if @['aroundCreate']
+		@callMethod 'beforeCreate'
+		@callMethod 'aroundCreate'
 		that = @
 		
 		Client.collection(@collectionName).insert object, (err, result) ->
 			result._id = result._id.toString()
 			that._id = result._id
-			do that.aroundCreate if that['aroundCreate']
-			do that.afterCreate if that['afterCreate']
+			that.callMethod 'aroundCreate'
+			that.callMethod 'afterCreate'
 			callback err, result if callback
 		
 	update: (callback, fromSave = no) ->
@@ -150,13 +160,13 @@ class MongoritoModel
 		_id = new mongolian.ObjectId object._id
 		delete object._id
 		
-		do @beforeUpdate if @['beforeUpdate']
-		do @aroundUpdate if @['aroundUpdate']
+		@callMethod 'beforeUpdate'
+		@callMethod 'aroundUpdate'
 		that = @
 		
 		Client.collection(@collectionName).update { _id: _id }, object, (err, rowsUpdated) ->
-			do that.aroundUpdate if that['aroundUpdate']
-			do that.afterUpdate if that['afterUpdate']
+			that.callMethod 'aroundUpdate'
+			that.callMethod 'afterUpdate'
 			callback err, rowsUpdated if callback
 	
 	remove: (callback) ->
@@ -164,22 +174,17 @@ class MongoritoModel
 		
 		_id = new mongolian.ObjectId object._id
 		
-		do @beforeRemove if @['beforeRemove']
-		do @aroundRemove if @['aroundRemove']
+		@callMethod 'beforeRemove'
+		@callMethod 'aroundRemove'
 		that = @
 		query = ->
 			Client.collection(that.collectionName).remove _id: _id, (err) ->
-				do that.aroundRemove if that['aroundRemove']
-				do that.afterRemove if that['afterRemove']
+				that.callMethod 'aroundRemove'
+				that.callMethod 'afterRemove'
 				callback err if callback
-		if Cache
-			Cache.delByTag @collectionName, query
-		else
-			do query
+		do query
 
 module.exports=
 	connect: Mongorito.connect
 	disconnect: Mongorito.disconnect
-	cache: Mongorito.cache
 	bake: Mongorito.bake
-	Model: MongoritoModel

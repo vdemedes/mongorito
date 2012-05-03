@@ -11,8 +11,25 @@ Post = (function() {
 
   function Post() {}
 
+  Post.prototype.keys = ['author', 'content', 'title'];
+
+  Post.prototype.scopes = {
+    byDrew: {
+      author: 'Drew'
+    },
+    one: {
+      limit: 1
+    }
+  };
+
   return Post;
 
 })();
 
 Post = Mongorito.bake(Post);
+
+Post.one(function(err, posts) {
+  return posts.length === 1;
+});
+
+Post.byDrew(function(err, posts) {});
