@@ -14,5 +14,9 @@
 	},
 	"main": "index",
 	"engine": { "node": ">= 0.4.x" },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vdemedes/mongorito.git"
+	},
 	"license": "MIT"
 }
