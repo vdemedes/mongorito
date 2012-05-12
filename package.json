@@ -1,6 +1,6 @@
 {
     "name": "mongorito",
-	"version": "0.3.2",
+	"version": "0.3.3",
 	"description": "ODM for MongoDB.",
 	"keywords": ["mongo", "mongodb"],
 	"author": "Vadim Demedes <sbioko@gmail.com>",
@@ -13,6 +13,6 @@
 		"should": "*"
 	},
 	"main": "index",
-	"engines": { "node": ">= 0.4.x" },
+	"engine": { "node": ">= 0.4.x" },
 	"license": "MIT"
 }

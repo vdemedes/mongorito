@@ -65,6 +65,9 @@ class Model
 		
 		fields
 	
+	toJSON: ->
+		@fields()
+	
 	@bakeModelsFromItems: (items, _model) ->
 		models = []
 		for item in items
