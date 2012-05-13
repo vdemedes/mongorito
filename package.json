@@ -1,6 +1,6 @@
 {
     "name": "mongorito",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"description": "ODM for MongoDB.",
 	"keywords": ["mongo", "mongodb"],
 	"author": "Vadim Demedes <sbioko@gmail.com>",

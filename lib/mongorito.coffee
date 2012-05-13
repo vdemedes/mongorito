@@ -118,7 +118,7 @@ class Model
 	
 	callMethod: (method) ->
 		method = @[method] or @[inflect.underscore(method)]
-		do method if method
+		method.call @ if method
 	
 	save: (callback) ->
 		that = @
@@ -129,7 +129,7 @@ class Model
 		async.filter keys, (key, nextKey) ->
 			validationMethod = that["validate#{ inflect.camelize key }"] or that["validate_#{ inflect.underscore key }"]
 			if validationMethod
-				validationMethod (valid) ->
+				validationMethod.call that, (valid) ->
 					nextKey not valid
 			else
 				nextKey false
