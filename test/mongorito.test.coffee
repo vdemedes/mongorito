@@ -6,12 +6,14 @@ require 'should'
 async = require 'async'
 
 class Post
-	keys: ['author', 'title']
+	constructor: -> super
+	keys: ['author', 'title', 'body']
 	scopes:
 		one: limit: 1
 		latest: title: 'Just created'
 
 Post = Mongorito.bake Post
+PostId = 0
 
 describe 'Mongorito', ->
 	describe 'creating new record', ->
@@ -20,13 +22,14 @@ describe 'Mongorito', ->
 			post.title = 'Very nice post!'
 			post.author = 'Vadim'
 			post.save ->
+				PostId = post._id
 				Post.find (err, posts) ->
 					posts.length.should.equal 1
 					do done
 		
 		it 'should mass-asign post info', (done) ->
 			post = new Post
-			post.fill title: 'Very nice post!', author: 'Vadim', admin: yes
+			post.updateAttributes title: 'Very nice post!', author: 'Vadim', admin: yes
 			post.title.should.equal('Very nice post!') and post.author.should.equal('Vadim') and not post.admin
 			do done
 	
@@ -46,6 +49,11 @@ describe 'Mongorito', ->
 				do done
 	
 	describe 'getting records', ->
+		it 'should fetch post by _id', (done) ->
+			Post.find _id: PostId, (err, post) ->
+				post.title.should.equal 'Edited title!'
+				do done
+		
 		it 'should fetch just edited post', (done) ->
 			Post.find (err, posts) ->
 				posts[0].title.should.equal 'Edited title!'
@@ -101,3 +109,8 @@ describe 'Mongorito', ->
 					Post.find (err, posts) ->
 						posts.length.should.equal 0
 						do done
+	
+	after (done) ->
+		Post.remove ->
+			Mongorito.disconnect()
+			do done

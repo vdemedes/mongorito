@@ -24,6 +24,7 @@ Mongorito = require 'mongorito'
 Mongorito.connect ['mongo://user:password@127.0.0.1:27017/databaseName']
 
 class Post
+	constructor: -> super # do not change this line
 	keys: ['author', 'title']
 	scopes:
 		one: limit: 1
@@ -56,7 +57,7 @@ Check out **examples** folder, it has a lot of code, which describes all parts o
 
 # Tests
 
-Tests made using Mocha. Run using:
+Tests made using Mocha. Start MongoDB and run them using:
 
 ```
 mocha
