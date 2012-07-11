@@ -1,6 +1,6 @@
 mongolian = require 'mongolian'
 async = require 'async'
-inflect = require 'i'
+inflect = require('i')()
 Client = undefined
 
 String::replaceAt = (index, char) ->
