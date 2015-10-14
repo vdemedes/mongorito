@@ -56,7 +56,7 @@ describe ('Mongorito', function () {
     });*/
   });
 
-  before (function *(cb) {
+  before (function * () {
     yield Mongorito.connect('mongodb://localhost/mongorito_test');
   });
 
