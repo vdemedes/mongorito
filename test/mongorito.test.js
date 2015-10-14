@@ -31,31 +31,6 @@ const postFixture = require('./fixtures/post');
 */
 
 describe ('Mongorito', function () {
-  it ('expose mongoskin module properties', function () {
-    /*let mongoskin;
-
-    // if npm version is >= 3.x, mongoskin must be required directly
-    try {
-      mongoskin = require('monk/node_modules/mongoskin');
-    } catch (_) {
-      mongoskin = require('mongoskin');
-    }
-
-    let excludedKeys = [
-      'BSONNative',
-      'BSONPure',
-      'connect',
-      'version',
-      'db'
-    ];
-
-    Object.keys(mongoskin).forEach(function (key) {
-      if (excludedKeys.indexOf(key) === -1) {
-        Mongorito[key].should.equal(mongoskin[key]);
-      }
-    });*/
-  });
-
   before (function * () {
     yield Mongorito.connect('mongodb://localhost/mongorito_test');
   });
