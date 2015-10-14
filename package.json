@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "test": "mocha --harmony test/mongorito.test",
-    "coverage": "istanbul cover --harmony mocha test/mongorito.test"
+    "coverage": "istanbul cover _mocha --harmony test/mongorito.test"
   },
   "repository": {
     "type": "git",
