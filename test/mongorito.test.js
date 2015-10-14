@@ -174,6 +174,100 @@ describe ('Mongorito', function () {
       updatedAt.should.equal(timestamp);
     });
 
+    it ('populate a created document simple', function * () {
+      let timestamp = Math.round(new Date().getTime() / 1000);
+
+      let data = postFixture();
+      let post = new Post(data);
+      yield* post.save();
+
+      let title = 'Populated Post';
+
+      yield* post.save({
+        populate: {
+          title: title
+        }
+      })
+
+      let posts = yield* Post.all();
+      let createdPost = posts[0];
+
+      posts.length.should.equal(1);
+      createdPost.get('_id').toString().should.equal(post.get('_id').toString());
+
+      let createdAt = Math.round(createdPost.get('created_at').getTime() / 1000);
+      let updatedAt = Math.round(createdPost.get('updated_at').getTime() / 1000);
+
+      createdAt.should.equal(timestamp);
+      updatedAt.should.equal(timestamp);
+      createdPost.get('title').should.equal(title);
+    });
+
+    it ('populate a created document array', function * () {
+      let timestamp = Math.round(new Date().getTime() / 1000);
+
+      let data = postFixture();
+      let post = new Post(data);
+      yield* post.save();
+
+      let content = ['1', '2', '3'];
+
+      yield* post.save({
+        populate: {
+          array: content
+        }
+      })
+
+      let posts = yield* Post.all();
+      let createdPost = posts[0];
+
+      posts.length.should.equal(1);
+      createdPost.get('_id').toString().should.equal(post.get('_id').toString());
+
+      let createdAt = Math.round(createdPost.get('created_at').getTime() / 1000);
+      let updatedAt = Math.round(createdPost.get('updated_at').getTime() / 1000);
+
+      createdAt.should.equal(timestamp);
+      updatedAt.should.equal(timestamp);
+      createdPost.get('array').should.deep.equal(content);
+    });
+
+    it ('populate a created document object', function * () {
+      let timestamp = Math.round(new Date().getTime() / 1000);
+
+      let data = postFixture();
+      let post = new Post(data);
+      yield* post.save();
+
+      let content = {
+        a : {
+          foo: 'bar',
+          baz: 'bah'
+        },
+        b: 'there',
+        c: ['1', '2', '3']
+      }
+
+      yield* post.save({
+        populate: {
+          object: content
+        }
+      })
+
+      let posts = yield* Post.all();
+      let createdPost = posts[0];
+
+      posts.length.should.equal(1);
+      createdPost.get('_id').toString().should.equal(post.get('_id').toString());
+
+      let createdAt = Math.round(createdPost.get('created_at').getTime() / 1000);
+      let updatedAt = Math.round(createdPost.get('updated_at').getTime() / 1000);
+
+      createdAt.should.equal(timestamp);
+      updatedAt.should.equal(timestamp);
+      createdPost.get('object').should.deep.equal(content);
+    });
+
     it ('create a new document with default values', function * () {
       let data = postFixture();
       delete data.title;
@@ -318,6 +412,21 @@ describe ('Mongorito', function () {
         posts.length.should.equal(1);
 
         let createdPost = yield* Post.findOne();
+        createdPost.get('_id').toString().should.equal(post.get('_id').toString());
+
+        createdPost = yield* Post.findOne({ title: post.get('title') });
+        createdPost.get('_id').toString().should.equal(post.get('_id').toString());
+      });
+
+      it ('find one document by Id', function * () {
+        let data = postFixture();
+        let post = new Post(data);
+        yield* post.save();
+
+        let posts = yield* Post.all();
+        posts.length.should.equal(1);
+
+        let createdPost = yield* Post.findById(post.get('_id'));
         createdPost.get('_id').toString().should.equal(post.get('_id').toString());
 
         createdPost = yield* Post.findOne({ title: post.get('title') });
@@ -1101,7 +1210,38 @@ describe ('Mongorito', function () {
     yield secondaryDb.close();
   });
 
+  it ('should fail mongo setup and reject', function * (){
+    let err;
+    try {
+      yield Mongorito.connect('badurl/nodb');
+    } catch (e) {
+      err = e;
+      e.name.should.equal('MongoError');
+    }
+    (typeof err).should.equal('object');
+  });
+
+  it ('should not allow construction of a mongorito', function * (){
+    let err;
+    try {
+      new Mongorito();
+    } catch(e) {
+      err = e;
+      e.name.should.equal('EnforcerError');
+    }
+    (typeof err).should.equal('object');
+
+    try {
+      new Mongorito(Symbol());
+    } catch(e) {
+      err = e;
+      e.name.should.equal('EnforcerError');
+    }
+    (typeof err).should.equal('object');
+  });
+
+
   after (function () {
-    Mongorito.disconnect();
+    Mongorito.close();
   });
 });
