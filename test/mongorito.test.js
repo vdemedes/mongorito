@@ -134,14 +134,14 @@ describe ('Mongorito', function () {
       yield* Post.index('title');
 
       let indexes = yield* Post.indexes();
-      indexes.should.have.property('title_1');
+      indexes.should.have.deep.property('[' + (indexes.length - 1) + '].name', 'title_1');
     });
 
     it ('setup a unique index', function * () {
       yield* Task.index('name', { unique: true });
 
       let indexes = yield* Task.indexes();
-      indexes.should.have.property('name_1');
+      indexes.should.have.deep.property('[' + (indexes.length - 1) + '].name', 'name_1');
 
       let firstTask = new Task({ name: 'first' });
       let secondTask = new Task({ name: 'first' });
@@ -1084,7 +1084,7 @@ describe ('Mongorito', function () {
       }
     }
 
-    let secondaryDb = yield Mongorito.connect('mongodb://localhost/mongorito_test_2');
+    let secondaryDb = yield Mongorito.connect('localhost/mongorito_test_2');
     class Post2 extends Model {
       get db () {
         return secondaryDb;
