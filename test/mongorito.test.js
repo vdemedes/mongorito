@@ -1046,7 +1046,7 @@ describe ('Mongorito', function () {
     });
   });
 
-  it ('be able to use multiple databases', function * (done) {
+  it ('be able to use multiple databases', function * () {
     // Post1 will be stored in first database
     // Post2 will be stored in second database
     class Post1 extends Model {
@@ -1092,6 +1092,13 @@ describe ('Mongorito', function () {
     post.get('title').should.equal('Post in second db');
 
     secondaryDb.close();
+  });
+
+  it ('be able to yield a close call (issue #23)', function * (){
+    let secondaryDb = yield Mongorito.connect('localhost/mongorito_test_2');
+    yield secondaryDb.close();
+    secondaryDb = yield Mongorito.connect('localhost/mongorito_test_2');
+    yield secondaryDb.close();
   });
 
   after (function () {
