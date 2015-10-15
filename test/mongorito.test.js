@@ -586,7 +586,7 @@ describe ('Mongorito', function () {
         }
       });
 
-      it ('populate the response', function * () {
+      it.skip ('populate the response', function * () {
         let n = 3;
         let comments = [];
 
