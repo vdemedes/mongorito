@@ -1145,26 +1145,6 @@ describe ('Mongorito', function () {
     (typeof err).should.equal('object');
   });
 
-  it ('should not allow construction of a mongorito', function * (){
-    let err;
-    try {
-      new Mongorito();
-    } catch(e) {
-      err = e;
-      e.name.should.equal('EnforcerError');
-    }
-    (typeof err).should.equal('object');
-
-    try {
-      new Mongorito(Symbol());
-    } catch(e) {
-      err = e;
-      e.name.should.equal('EnforcerError');
-    }
-    (typeof err).should.equal('object');
-  });
-
-
   after (function () {
     Mongorito.close();
   });
