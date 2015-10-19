@@ -127,14 +127,14 @@ describe ('Mongorito', function () {
       yield* Post.index('title');
 
       let indexes = yield* Post.indexes();
-      indexes.should.have.deep.property('[' + (indexes.length - 1) + '].name', 'title_1');
+      indexes[indexes.length - 1].should.have.deep.property('name', 'title_1')
     });
 
     it ('setup a unique index', function * () {
       yield* Task.index('name', { unique: true });
 
       let indexes = yield* Task.indexes();
-      indexes.should.have.deep.property('[' + (indexes.length - 1) + '].name', 'name_1');
+      indexes[indexes.length - 1].should.have.deep.property('name', 'name_1')
 
       let firstTask = new Task({ name: 'first' });
       let secondTask = new Task({ name: 'first' });
