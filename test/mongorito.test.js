@@ -43,6 +43,24 @@ describe ('Mongorito', function () {
   });
 
   describe ('Model', function () {
+    it ('expose mongodb module properties', function () {
+      const mongodb = require('mongodb');
+
+      let excludedKeys = [
+        'connect',
+        'MongoClient',
+        'Db',
+        'db'
+      ];
+
+      Mongorito.should.not.have.property('MongoClient');
+
+      Object.keys(mongodb).forEach(function (key) {
+        if (excludedKeys.indexOf(key) === -1) {
+          Mongorito[key].should.equal(mongodb[key]);
+        }
+      });
+    });
     it ('initialize model and manage attributes', function () {
       let data, post, attrs;
 
