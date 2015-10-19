@@ -1127,7 +1127,7 @@ describe ('Mongorito', function () {
     secondaryDb.close();
   });
 
-  it ('be able to yield a close call (issue #23)', function * (){
+  it ('be able to yield a close call', function * (){
     let secondaryDb = yield Mongorito.connect('localhost/mongorito_test_2');
     yield secondaryDb.close();
     secondaryDb = yield Mongorito.connect('localhost/mongorito_test_2');
