@@ -73,6 +73,36 @@ test('update `updated_at` attribute', async t => {
 	t.not(prevDate, nextDate);
 });
 
+test('update attribute with merge', async t => {
+	let post = new Post({ title: 'Default title', subtitle: 'Default subtitle' });
+	await post.save();
+
+	let updatedPost = new Post({ _id: post.get('_id'), title: 'Updated title' });
+	await updatedPost.save({ merge: true });
+
+	let posts = await Post.all();
+	t.is(posts.length, 1);
+
+	let createdPost = posts[0];
+	t.is(createdPost.get('title'), 'Updated title');
+	t.is(createdPost.get('subtitle'), 'Default subtitle');
+});
+
+test('update nested attribute with merge', async t => {
+	let post = new Post({ title: 'Default title', author: { name: 'john' } });
+	await post.save();
+
+	let updatedPost = new Post({ _id: post.get('_id'), 'author.name': 'david' });
+	await updatedPost.save({ merge: true });
+
+	let posts = await Post.all();
+	t.is(posts.length, 1);
+
+	let createdPost = posts[0];
+	t.is(createdPost.get('title'), 'Default title');
+	t.is(createdPost.get('author.name'), 'david');
+});
+
 test('remove', async t => {
 	let post = new Post();
 	await post.save();
