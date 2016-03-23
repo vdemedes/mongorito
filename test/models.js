@@ -92,7 +92,7 @@ test('update nested attribute with merge', async t => {
 	let post = new Post({ title: 'Default title', author: { name: 'john' } });
 	await post.save();
 
-	let updatedPost = new Post({ _id: post.get('_id'), 'author.name': 'david' });
+	let updatedPost = new Post({ _id: post.get('_id'), author: { name: 'david' } });
 	await updatedPost.save({ merge: true });
 
 	let posts = await Post.all();
