@@ -1,6 +1,6 @@
 {
   "name": "mongorito",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "ES6 generator-based MongoDB ODM. It rocks.",
   "author": "Vadim Demedes <vdemedes@gmail.com>",
   "dependencies": {
@@ -34,7 +34,7 @@
     "test": "xo && nyc ava --serial",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
-  "repository": "vdemedes/mongorito",
+  "repository": "garrefa/mongorito",
   "keywords": [
     "mongo",
     "mongodb",

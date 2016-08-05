@@ -23,5 +23,9 @@ function toObjectId (id) {
 		return id;
 	}
 
-	return new ObjectId(id);
+  try {
+    return new ObjectId(id);
+  } catch (error) {
+    return id;
+  }
 }
