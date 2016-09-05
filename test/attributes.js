@@ -37,7 +37,7 @@ test('expose mongodb properties', t => {
 });
 
 test('set and get mongodb driver', t => {
-	let mockDriver = {
+	const mockDriver = {
 		'MongoClient': true
 	};
 
@@ -47,12 +47,10 @@ test('set and get mongodb driver', t => {
 });
 
 test('set mock mongodb driver and connect', t => {
-	let mockDriver = {
+	const mockDriver = {
 		'MongoClient': {
 			'connect': () => {
-				return new Promise(fulfill => {
-					return fulfill('ok');
-				});
+				return Promise.resolve('ok');
 			}
 		}
 	};
