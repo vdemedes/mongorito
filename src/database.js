@@ -24,7 +24,7 @@ class Database {
 	}
 
 	static connect(urls, options) {
-		const db = new this(urls, options);
+		const db = new Database(urls, options);
 		db.connect();
 		return db;
 	}
