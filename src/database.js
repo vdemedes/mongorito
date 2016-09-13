@@ -23,6 +23,12 @@ class Database {
 		this.plugins = [];
 	}
 
+	static connect(urls, options) {
+		const db = new this(urls, options);
+		db.connect();
+		return db;
+	}
+
 	connect() {
 		if (this._connection) {
 			return Promise.resolve(this._connection);
