@@ -175,6 +175,12 @@ class Query {
 			}
 		});
 	}
+
+	then(success, reject) {
+		return this.model.dbCollection()
+			.then(collection => this.mquery.collection(collection))
+			.then(success, reject);
+	}
 }
 
 queryMethods.forEach(name => {
