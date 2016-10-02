@@ -3,53 +3,7 @@
 const isObject = require('is-plain-obj');
 const mquery = require('mquery');
 
-const queryMethods = require('./util/query-methods');
-
-class Query {
-	constructor() {
-		this.mquery = mquery();
-	}
-
-	find(query = {}) {
-		this.where(query);
-
-		return this.model.hooks.run('before', 'find', [], this)
-			.then(() => this.model.dbCollection())
-			.then(collection => {
-				return new Promise((resolve, reject) => {
-					this.mquery.collection(collection).find((err, docs) => {
-						if (err) {
-							reject(err);
-							return;
-						}
-
-						resolve(docs);
-					});
-				});
-			})
-			.then(docs => this.model.hooks.run('after', 'find', [docs], this));
-	}
-
-	findOne(query = {}) {
-		this.where(query);
-
-		return this.model.hooks.run('before', 'find', [], this)
-			.then(() => this.model.dbCollection())
-			.then(collection => {
-				return new Promise((resolve, reject) => {
-					this.mquery.collection(collection).findOne((err, doc) => {
-						if (err) {
-							reject(err);
-							return;
-						}
-
-						resolve(doc ? [doc] : []);
-					});
-				});
-			})
-			.then(docs => this.model.hooks.run('after', 'find', [docs], this))
-			.then(models => models[0]);
-	}
+class Query extends mquery {
 
 	findById(id) {
 		this.where('_id', id);
@@ -57,7 +11,7 @@ class Query {
 		return this.model.dbCollection()
 			.then(collection => {
 				return new Promise((resolve, reject) => {
-					this.mquery.collection(collection).findOne((err, doc) => {
+					this.collection(collection).findOne((err, doc) => {
 						if (err) {
 							reject(err);
 							return;
@@ -70,42 +24,6 @@ class Query {
 
 						const model = new this.model(doc); // eslint-disable-line babel/new-cap
 						resolve(model);
-					});
-				});
-			});
-	}
-
-	remove(query = {}) {
-		this.where(query);
-
-		return this.model.dbCollection()
-			.then(collection => {
-				return new Promise((resolve, reject) => {
-					this.mquery.collection(collection).remove(err => {
-						if (err) {
-							reject(err);
-							return;
-						}
-
-						resolve();
-					});
-				});
-			});
-	}
-
-	count(query = {}) {
-		this.where(query);
-
-		return this.model.dbCollection()
-			.then(collection => {
-				return new Promise((resolve, reject) => {
-					this.mquery.collection(collection).count((err, count) => {
-						if (err) {
-							reject(err);
-							return;
-						}
-
-						resolve(count);
 					});
 				});
 			});
@@ -125,7 +43,7 @@ class Query {
 
 		select[field] = value;
 
-		this.mquery.select(select);
+		this.select(select);
 
 		return this;
 	}
@@ -144,7 +62,7 @@ class Query {
 
 		select[field] = value;
 
-		this.mquery.select(select);
+		this.select(select);
 
 		return this;
 	}
@@ -163,7 +81,7 @@ class Query {
 
 		sort[field] = value;
 
-		this.mquery.sort(sort);
+		super.sort(sort);
 
 		return this;
 	}
@@ -177,18 +95,33 @@ class Query {
 	}
 
 	then(success, reject) {
-		return this.model.dbCollection()
-			.then(collection => this.mquery.collection(collection))
+		return this._beforeHooks()
+			.then(() => this.model.dbCollection())
+			.then(collection => {
+				this.collection(collection);
+				return super.then();
+			})
+			.then(docs => this._afterHooks(docs))
 			.then(success, reject);
 	}
+
+	_beforeHooks() {
+		if (this.op === 'find' || this.op === 'findOne') {
+			return this.model.hooks.run('before', 'find', [], this);
+		}
+		return Promise.resolve();
+	}
+
+	_afterHooks(data) {
+		if (this.op === 'findOne') {
+			return this.model.hooks.run('after', 'find', [[data]], this)
+				.then(docs => docs[0]);
+		}
+		if (this.op === 'find') {
+			return this.model.hooks.run('after', 'find', [data], this);
+		}
+		return data;
+	}
 }
-
-queryMethods.forEach(name => {
-	Query.prototype[name] = function (...args) {
-		this.mquery[name].apply(this.mquery, args);
-
-		return this;
-	};
-});
 
 module.exports = Query;
