@@ -4,13 +4,13 @@
  * Dependencies
  */
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const setup = require('./_setup');
 const test = require('ava');
 
 const postFixture = require('./fixtures/post');
 
-const Model = mongorito.Model;
+const Model = mongoritwo.Model;
 
 
 /**

@@ -4,7 +4,7 @@
  * Dependencies
  */
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const setup = require('./_setup');
 const test = require('ava');
 
@@ -31,7 +31,7 @@ test('expose mongodb properties', t => {
 
 	Object.keys(mongodb).forEach(key => {
 		if (excludedKeys.indexOf(key) === -1) {
-			t.is(mongorito[key], mongodb[key]);
+			t.is(mongoritwo[key], mongodb[key]);
 		}
 	});
 });
@@ -41,9 +41,9 @@ test('set and get mongodb driver', t => {
 		'MongoClient': true
 	};
 
-	mongorito.setDriver(mockDriver);
+	mongoritwo.setDriver(mockDriver);
 
-	t.is(mongorito.getDriver(), mockDriver);
+	t.is(mongoritwo.getDriver(), mockDriver);
 });
 
 test('set mock mongodb driver and connect', t => {
@@ -55,12 +55,12 @@ test('set mock mongodb driver and connect', t => {
 		}
 	};
 
-	mongorito.setDriver(mockDriver);
+	mongoritwo.setDriver(mockDriver);
 
 	// If setDriver was not successful, Mongorito would use a real driver here, which would fail on the invalid connect
 	// URL. This means: If this connect is successful, setDriver was successful, as the mockDriver that was used always
 	// fulfills.
-	t.ok(mongorito.connect('THIS:IS:AN:INVALID:MONGO_URL'));
+	t.ok(mongoritwo.connect('THIS:IS:AN:INVALID:MONGO_URL'));
 });
 
 test('initialize and manage attributes', t => {

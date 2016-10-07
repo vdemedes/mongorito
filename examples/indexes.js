@@ -1,9 +1,9 @@
 'use strict';
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const run = require('./run');
 
-const Model = mongorito.Model;
+const Model = mongoritwo.Model;
 
 // a sample model
 class Post extends Model {
@@ -12,7 +12,7 @@ class Post extends Model {
 
 
 run(function * () {
-	yield mongorito.connect('localhost/examples');
+	yield mongoritwo.connect('localhost/examples');
 
 	// set up an index
 	yield Post.index('title');
@@ -30,5 +30,5 @@ run(function * () {
 	let indexes = yield Post.indexes();
 	console.log('All indexes:\n', indexes);
 
-	yield mongorito.disconnect();
+	yield mongoritwo.disconnect();
 });

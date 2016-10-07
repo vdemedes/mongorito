@@ -28,7 +28,7 @@ test('setup an index', async t => {
 			title: 1
 		},
 		name: 'title_1',
-		ns: 'mongorito_test.posts'
+		ns: 'mongoritwo_test.posts'
 	});
 });
 
@@ -44,7 +44,7 @@ test('setup a unique index', async t => {
 			name: 1
 		},
 		name: 'name_1',
-		ns: 'mongorito_test.tasks'
+		ns: 'mongoritwo_test.tasks'
 	});
 
 	await new Task({ name: 'first' }).save();

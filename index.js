@@ -1,1 +1,1 @@
-module.exports = require('./lib/mongorito');
+module.exports = require('./lib/mongoritwo');

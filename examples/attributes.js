@@ -1,9 +1,9 @@
 'use strict';
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const run = require('./run');
 
-const Model = mongorito.Model;
+const Model = mongoritwo.Model;
 
 // a sample model
 class Post extends Model {

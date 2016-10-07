@@ -4,7 +4,7 @@
  * Dependencies
  */
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const setup = require('./_setup');
 const test = require('ava');
 
@@ -13,7 +13,7 @@ const Post = require('./fixtures/models/post');
 
 const postFixture = require('./fixtures/post');
 
-const Model = mongorito.Model;
+const Model = mongoritwo.Model;
 
 
 /**
@@ -132,7 +132,7 @@ test('use multiple databases', async t => {
 		}
 	}
 
-	let secondaryDb = await mongorito.connect((process.env.MONGO_URL ? process.env.MONGO_URL + '_2' : 'localhost/mongorito_test_2'));
+	let secondaryDb = await mongoritwo.connect((process.env.MONGO_URL ? process.env.MONGO_URL + '_2' : 'localhost/mongoritwo_test_2'));
 
 	class Post2 extends Model {
 		db () {
