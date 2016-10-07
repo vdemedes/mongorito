@@ -1,8 +1,19 @@
 {
   "name": "mongorito",
-  "version": "2.1.2",
-  "description": "ES6 generator-based MongoDB ODM. It rocks.",
-  "author": "Vadim Demedes <vdemedes@gmail.com>",
+  "version": "2.2.0",
+  "description": "ES6 generator-based MongoDB ODM. Fork of vdemedes/mongorito with power-users/business-users in mind.",
+  "contributors": [
+    {
+      "name": "Vadim Demedes",
+      "email": "vdemedes@gmail.com",
+      "url": "http://mongorito.com"
+    },
+    {
+      "name": "Marius",
+      "email": "marius@twostairs.com",
+      "url": "https://twostairs.com"
+    }
+  ],
   "dependencies": {
     "bluebird": "^3.3.1",
     "class-extend": "^0.1.2",
@@ -21,9 +32,8 @@
     "ava": "^0.12.0",
     "chance": "^0.8.0",
     "coveralls": "^2.11.4",
-    "eslint-config-vdemedes": "^1.0.2",
-    "nyc": "^5.0.0",
-    "xo": "^0.12.1"
+    "eslint": "^3.7.1",
+    "nyc": "^5.0.0"
   },
   "files": [
     "index.js",
@@ -31,10 +41,10 @@
     "lib"
   ],
   "scripts": {
-    "test": "xo && nyc ava --serial",
+    "test": "nyc ava --serial",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
-  "repository": "vdemedes/mongorito",
+  "repository": "twostairs/mongoritwo",
   "keywords": [
     "mongo",
     "mongodb",
@@ -44,20 +54,5 @@
     "odm",
     "es6"
   ],
-  "license": "MIT",
-  "xo": {
-    "extends": "vdemedes",
-    "esnext": true,
-    "env": [
-      "node",
-      "mocha"
-    ],
-    "ignore": [
-      "examples/*.js"
-    ],
-    "rules": {
-      "prefer-arrow-callback": 0,
-      "prefer-spread": 0
-    }
-  }
+  "license": "MIT"
 }

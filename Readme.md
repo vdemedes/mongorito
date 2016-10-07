@@ -1,10 +1,10 @@
-# Mongorito
+# Mongoritwo
 
-[![Build Status](https://travis-ci.org/vdemedes/mongorito.svg?branch=master)](https://travis-ci.org/vdemedes/mongorito)
-[![Coverage Status](https://coveralls.io/repos/vdemedes/mongorito/badge.svg?branch=master&service=github)](https://coveralls.io/github/vdemedes/mongorito?branch=master)
+[![Build Status](https://travis-ci.org/twostairs/mongoritwo.svg?branch=master)](https://travis-ci.org/twostairs/mongoritwo)
+[![Coverage Status](https://coveralls.io/repos/twostairs/mongoritwo/badge.svg?branch=master&service=github)](https://coveralls.io/github/twostairs/mongoritwo?branch=master)
 
-Awesome MongoDB ODM for Node.js apps.
-Just take a look at its beautiful models and API.
+ES6 generator-based MongoDB ODM. 
+Fork of vdemedes/mongorito with power-users/business-users in mind.
 
 Uses official [mongodb](https://www.npmjs.com/package/mongodb) driver under the hood.
 
@@ -19,14 +19,14 @@ Uses official [mongodb](https://www.npmjs.com/package/mongodb) driver under the 
 ## Quick overview
 
 ```js
-const mongorito = require('mongorito');
-const Model = mongorito.Model;
+const mongoritwo = require('mongoritwo');
+const Model = mongoritwo.Model;
 
 class Post extends Model {
 	
 }
 
-mongorito.connect('localhost/blog');
+mongoritwo.connect('localhost/blog');
 
 let post = new Post({
 	title: 'Steve Angello rocks',
@@ -52,7 +52,7 @@ post.save();
 ## Installation
 
 ```
-$ npm install mongorito --save
+$ npm install mongoritwo --save
 ```
 
 
@@ -71,13 +71,13 @@ $ npm install mongorito --save
 Here's how to connect to a `blog` database on `localhost`:
 
 ```js
-await mongorito.connect('localhost/blog');
+await mongoritwo.connect('localhost/blog');
 ```
 
-To disconnect, use `mongorito.disconnect()`:
+To disconnect, use `mongoritwo.disconnect()`:
 
 ```js
-await mongorito.disconnect();
+await mongoritwo.disconnect();
 ```
 
 ### Models
@@ -85,7 +85,7 @@ await mongorito.disconnect();
 Use classes to define models:
 
 ```js
-const Model = mongorito.Model;
+const Model = mongoritwo.Model;
 
 class Post extends Model {
 	
@@ -103,7 +103,7 @@ class Post extends Model {
 }
 ```
 
-Mongorito models can also be defined old-fashioned Backbone way:
+Mongoritwo models can also be defined old-fashioned Backbone way:
 
 ```js
 const Post = Model.extend({
@@ -153,7 +153,7 @@ post.set('author.name', 'Rachel');
 
 *Check out [manage](examples/manage.js) example.*
 
-Use a `save()` method to create/update (Mongorito handles that for you) a model:
+Use a `save()` method to create/update (Mongoritwo handles that for you) a model:
 
 ```js
 let post = new Post();
@@ -289,4 +289,4 @@ $ npm test
 
 ## License
 
-Mongorito is released under the MIT License.
+Mongoritwo is released under the MIT License.
