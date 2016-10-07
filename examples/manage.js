@@ -1,16 +1,16 @@
 'use strict';
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const run = require('./run');
 
-const Model = mongorito.Model;
+const Model = mongoritwo.Model;
 
 class Post extends Model {
 
 }
 
 run(function * () {
-	yield mongorito.connect('localhost/examples');
+	yield mongoritwo.connect('localhost/examples');
 
 	// create
 	let post = new Post({
@@ -42,5 +42,5 @@ run(function * () {
 	// done
 	console.log('Removed all posts matching a criteria');
 
-	yield mongorito.disconnect();
+	yield mongoritwo.disconnect();
 });

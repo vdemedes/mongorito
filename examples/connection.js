@@ -1,17 +1,17 @@
 'use strict';
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 const run = require('./run');
 
 run(function * () {
 	// connect to a database named "examples" on localhost
-	yield mongorito.connect('localhost/examples');
+	yield mongoritwo.connect('localhost/examples');
 
 	// connected
 	console.log('connected');
 
 	// and disconnect
-	yield mongorito.disconnect();
+	yield mongoritwo.disconnect();
 
 	// disconnected
 	console.log('disconnected');

@@ -4,7 +4,7 @@
  * Dependencies
  */
 
-const mongorito = require('../');
+const mongoritwo = require('../');
 
 const Comment = require('./fixtures/models/comment');
 const Account = require('./fixtures/models/account');
@@ -17,14 +17,14 @@ const Task = require('./fixtures/models/task');
  */
 
 function setup (test) {
-	test.before(() => mongorito.connect((process.env.MONGO_URL ? process.env.MONGO_URL : 'localhost/mongorito_test')));
+	test.before(() => mongoritwo.connect((process.env.MONGO_URL ? process.env.MONGO_URL : 'localhost/mongoritwo_test')));
 
 	test.beforeEach(() => Account.remove());
 	test.beforeEach(() => Comment.remove());
 	test.beforeEach(() => Post.remove());
 	test.beforeEach(() => Task.remove());
 
-	test.after(() => mongorito.disconnect());
+	test.after(() => mongoritwo.disconnect());
 }
 
 
