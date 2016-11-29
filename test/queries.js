@@ -358,6 +358,29 @@ test('sort documents', async t => {
 	}
 });
 
+test('populate push comment', async t => {
+	let data = commentFixture();
+	let comment = new Comment(data);
+	await comment.save();
+
+	let createdPost = new Post({
+		comments: []
+	});
+	await createdPost.save();
+	const postId = createdPost.get('_id');
+	await Post.push(postId, 'comments', comment);
+	let post = await Post.populate('comments', Comment).findOne();
+
+	const comments = post.get('comments');
+	t.is(comments[0].get('_id').toString(), comment.get('_id').toString());
+
+	// now confirm that populated documents
+	// don't get saved to database
+	await post.save();
+	post = await Post.findOne();
+	t.is(post.get('comments')[0].toString(), comment.get('_id').toString());
+});
+
 test('populate the response', async t => {
 	let n = 3;
 	let comments = [];
