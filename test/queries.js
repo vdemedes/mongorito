@@ -329,6 +329,44 @@ test('find documents with .in()', async t => {
 	t.is(posts.length, 2);
 });
 
+test('findAndModify document by _id', async t => {
+	let data = postFixture();
+	let createdPost = new Post(data);
+	await createdPost.save();
+
+	let posts = await Post.count();
+	t.is(posts, 1);
+
+	let post = await Post.findAndModify({
+		'_id': createdPost.get('_id')
+	}, [['_id', 'asc']], {
+		'$set': {
+			'title': 'foundAndModified'
+		}
+	}, { 'new': true });
+
+	t.is(post.get('title'), 'foundAndModified');
+});
+
+test('findAndModify document by _id (string)', async t => {
+	let data = postFixture();
+	let createdPost = new Post(data);
+	await createdPost.save();
+
+	let posts = await Post.count();
+	t.is(posts, 1);
+
+	let post = await Post.findAndModify({
+		'_id': createdPost.get('_id').toString()
+	}, [['_id', 'asc']], {
+		'$set': {
+			'title': 'foundAndModified'
+		}
+	}, { 'new': true });
+
+	t.is(post.get('title'), 'foundAndModified');
+});
+
 test('sort documents', async t => {
 	let n = 4;
 

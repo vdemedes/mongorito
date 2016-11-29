@@ -241,6 +241,14 @@ Find all models where `title` equals either "First" or "Second":
 Post.or({ title: 'First' }, { title: 'Second' }).find();
 ```
 
+#### Find and modify
+
+Update and retrieve the contents for one single document:
+
+```js
+Post.findAndModify({ 'title': 'Unknown' }, [['_id', 'asc']], { '$set': { 'title': 'Found and modified!' } }, { 'new': true });
+```
+
 #### Limit results
 
 ```js
