@@ -291,6 +291,16 @@ test('sort documents', async t => {
 		const post = posts[n];
 		t.is(post.get('index'), 3 - n);
 	}
+
+	posts = await Post.sort([['_id', -1]]).find();
+	t.is(posts.length, 4);
+
+	n = 4;
+
+	while (n--) {
+		const post = posts[n];
+		t.is(post.get('index'), n);
+	}
 });
 
 test('find documents and include only one selected field', async t => {
