@@ -1,28 +1,17 @@
 'use strict';
 
-/**
- * Dependencies
- */
-
-const setup = require('./_setup');
 const test = require('ava');
 
 const Post = require('./fixtures/models/post');
-const Task = require('./fixtures/models/task');
-
-
-/**
- * Tests
- */
+const setup = require('./_setup');
 
 setup(test);
 
 test('setup an index', async t => {
 	await Post.index('title');
 
-	let indexes = await Post.indexes();
-	let lastIndex = indexes[indexes.length - 1];
-	t.same(lastIndex, {
+	const indexes = await Post.indexes();
+	t.deepEqual(indexes.pop(), {
 		v: 1,
 		key: {
 			title: 1
@@ -30,33 +19,35 @@ test('setup an index', async t => {
 		name: 'title_1',
 		ns: 'mongorito_test.posts'
 	});
+
+	await Post.dropIndex('title_1');
 });
 
 test('setup a unique index', async t => {
-	await Task.index('name', { unique: true });
+	await Post.index('name', {unique: true});
 
-	let indexes = await Task.indexes();
-	let lastIndex = indexes[indexes.length - 1];
-	t.same(lastIndex, {
+	const indexes = await Post.indexes();
+	t.deepEqual(indexes.pop(), {
 		v: 1,
 		unique: true,
 		key: {
 			name: 1
 		},
 		name: 'name_1',
-		ns: 'mongorito_test.tasks'
+		ns: 'mongorito_test.posts'
 	});
 
-	await new Task({ name: 'first' }).save();
+	await new Post({name: 'first'}).save();
+	await t.throws(new Post({name: 'first'}).save());
+	await Post.dropIndex('name_1');
+});
 
-	let err;
+test('drop index', async t => {
+	await Post.index('name', {unique: true});
 
-	try {
-		await new Task({ name: 'first' }).save();
-	} catch (e) {
-		err = e;
-	}
+	await new Post({name: 'first'}).save();
+	await t.throws(new Post({name: 'first'}).save());
 
-	t.ok(err);
-	t.is(err.name, 'MongoError');
+	await Post.dropIndex('name_1');
+	await new Post({name: 'first'}).save();
 });
