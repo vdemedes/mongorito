@@ -92,3 +92,18 @@ test('deserialize embedded models', async t => {
 	t.true(foundPost.get('comments')[1].get('author') === undefined);
 	t.is(foundPost.get('comments')[1].get('body'), 'Anonymous comment');
 });
+
+test('should not affect unecessary fields', async t => {
+	const post = new Post({
+		title: 'Will update later',
+		author: new User({name: 'Steve'})
+	});
+
+	post.set('title', 'Updated'); // used to trigger unexpected behavior
+
+	t.is(post.get('title'), 'Updated');
+
+	t.true(post.get('author') instanceof User);
+	t.deepEqual(post.get('author').get(), {name: 'Steve'});
+	t.true(post.get('comments') === undefined);
+});
