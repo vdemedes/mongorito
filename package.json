@@ -36,7 +36,7 @@
     "redux": "^3.6.0"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "^0.25.0",
     "chance": "^1.0.4",
     "coveralls": "^2.11.12",
     "nyc": "^8.1.0",
