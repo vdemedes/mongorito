@@ -220,7 +220,7 @@ test('remove all documents', async t => {
 	t.is(posts, 0);
 });
 
-test('automatically set collection name', async t => {
+test('automatically set collection name', t => {
 	t.is(Post.prototype.collection(), 'posts');
 });
 

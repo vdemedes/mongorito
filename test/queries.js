@@ -18,7 +18,7 @@ test('find all documents', async t => {
 
 	while (n--) {
 		const post = new Post();
-		await post.save(); // eslint-disable-line babel/no-await-in-loop
+		await post.save(); // eslint-disable-line no-await-in-loop
 
 		savedPosts.push(post);
 	}
@@ -124,7 +124,7 @@ test('sort documents', async t => {
 
 	while (n--) {
 		const post = new Post({index: n});
-		await post.save(); // eslint-disable-line babel/no-await-in-loop
+		await post.save(); // eslint-disable-line no-await-in-loop
 	}
 
 	let posts = await Post.sort({_id: -1}).find();
