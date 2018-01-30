@@ -34,8 +34,7 @@ test('add custom reducers', t => {
 		}
 	};
 
-	const modifyReducer = reducer => ({
-		...reducer,
+	const modifyReducer = reducer => Object.assign({}, reducer, {
 		test: testReducer
 	});
 
