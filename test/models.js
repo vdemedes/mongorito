@@ -225,7 +225,8 @@ test('automatically set collection name', async t => {
 });
 
 test('override collection name', async t => {
-	const {db} = t.context;
+	const {db, db: {_connection: mongoClient}} = t.context;
+	const dbConnection = mongoClient.db(mongoClient.s.options.dbName);
 
 	class CustomPost extends mongorito.Model {
 		collection() {
@@ -238,7 +239,7 @@ test('override collection name', async t => {
 	const post = new CustomPost({title: 'Greatness'});
 	await post.save();
 
-	const allCollections = await db._connection.collections();
+	const allCollections = await dbConnection.collections();
 	const collections = allCollections
 		.map(c => c.collectionName)
 		.filter(name => !name.includes('system'))
