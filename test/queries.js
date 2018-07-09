@@ -62,6 +62,8 @@ test('find one document - missing', async t => {
 	t.is(post, null);
 });
 
+// For some reason, xo thinks there's no `await` statements inside this function
+// eslint-disable-next-line ava/no-async-fn-without-await
 test('find one document by id', async t => {
 	const data = postFixture();
 	const createdPost = new Post(data);
