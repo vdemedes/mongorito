@@ -1,7 +1,7 @@
 'use strict';
 
 const test = require('ava');
-const mongorito = require('../');
+const mongorito = require('..');
 
 const postFixture = require('./fixtures/post');
 const setup = require('./_setup');
